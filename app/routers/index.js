@@ -6,7 +6,7 @@ const cors = require('cors');
 const session = require('express-session');
 const routes = require('./routes');
 
-function Router(){
+function Router() {
     this.app = express();
     this.httpServer = http.createServer(this.app);
     this.corsOptions = {
@@ -42,8 +42,19 @@ Router.prototype.setupMiddleware = function () {
         })
     );
 
+    this.app.use(this.routeConfig);
     this.app.use('/api/v1', routes);
     this.app.use('*', this.routeHandler);
+};
+
+Router.prototype.routeConfig = function (req, res, next) {
+    req.sRemoteAddress =
+        req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    if (req.path === '/ping') return res.status(200).send({});
+    res.reply = ({ code, message }, data = {}, header = undefined) => {
+        res.status(code).header(header).json({ message, data });
+    };
+    next();
 };
 
 Router.prototype.setupServer = function () {

@@ -1,10 +1,11 @@
 const controllers = {};
 
-controllers.test = (req,res)=>{
+controllers.test = async (req, res) => {
     try {
-        return res.status(200).json({message: 'Testing API'});
+        return res.reply(messages.success())
     } catch (error) {
         console.log(error)
+        return res.reply(messages.server_error())
     }
 }
 
