@@ -28,4 +28,22 @@ controllers.addMovie = async (req, res) => {
     }
 }
 
+controllers.updateMovie = async (req, res) => {
+    try {
+        const { nMovieId, sMovieName, nRating } = req.body;
+
+        if (!nMovieId) return res.reply(messages.not_found('movie id'))
+        if (!sMovieName) return res.reply(messages.not_found('movie name'))
+        if (!nRating) return res.reply(messages.not_found('movie rating'))
+        
+        pool.query('update movies set name = $1, rating = $2 where movie_id = $3', [sMovieName, nRating, nMovieId], (error, result) => {
+            if(error) throw error
+            return res.reply(messages.success());
+        })
+    } catch (error) {
+        console.log(error)
+        return res.reply(messages.server_error())
+    }
+}
+
 module.exports = controllers;
